@@ -1,11 +1,10 @@
 package dk.itu.moapd.scootersharing.jonli
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import com.google.android.material.snackbar.Snackbar
+import dk.itu.moapd.scootersharing.jonli.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,29 +12,27 @@ class MainActivity : AppCompatActivity() {
         private val TAG = MainActivity::class.qualifiedName
     }
 
-    private lateinit var scooterName: EditText
-    private lateinit var scooterLocation: EditText
-    private lateinit var startRideButton: Button
+    private lateinit var binding: ActivityMainBinding
 
-    private val scooter: Scooter = Scooter("","")
+    private val scooter: Scooter = Scooter("", "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        scooterName = findViewById(R.id.edit_text_name)
-        scooterLocation = findViewById(R.id.edit_text_location)
+        val scooterName = binding.editTextName
+        val scooterLocation = binding.editTextLocation
 
-        startRideButton = findViewById(R.id.start_ride_button)
-        startRideButton.setOnClickListener {
+        binding.startRideButton.setOnClickListener {
             if (scooterName.text.isNotEmpty() &&
-                scooterLocation.text.isNotEmpty()) {
-
+                scooterLocation.text.isNotEmpty()
+            ) {
                 val name = scooterName.text.toString().trim()
                 val location = scooterLocation.text.toString().trim()
-                scooter.setName(name)
-                scooter.setLocation(location)
+                scooter.name = name
+                scooter.location = location
 
                 scooterName.text.clear()
                 scooterLocation.text.clear()
@@ -45,6 +42,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMessage() {
-        Log.d(TAG, scooter.toString())
+        val message = "Ride started using Scooter(name=$scooter.name, location=$scooter.location)."
+        Snackbar.make(
+            binding.root,
+            message,
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 }
