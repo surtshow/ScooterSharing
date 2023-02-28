@@ -12,10 +12,10 @@
         android:theme="@style/Theme.ScooterSharing"
         tools:targetApi="31">
         <activity
-            android:name=".StartRideActivity"
+            android:name=".StartRideFragment"
             android:exported="false" />
         <activity
-            android:name=".UpdateRideActivity"
+            android:name=".UpdateRideFragment"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
