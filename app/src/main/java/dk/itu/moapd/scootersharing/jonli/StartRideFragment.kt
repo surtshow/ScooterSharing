@@ -20,6 +20,7 @@ class StartRideFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ridesDB = RidesDB.get(this.requireContext())
     }
 
     override fun onCreateView(

@@ -13,11 +13,14 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
 
     companion object {
+        lateinit var ridesDB: RidesDB
         private lateinit var adapter: CustomArrayAdapter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ridesDB = RidesDB.get(this.requireContext())
+        adapter = CustomArrayAdapter(this.requireContext(), R.layout.list_rides, ridesDB.getRidesList())
     }
 
     override fun onCreateView(
