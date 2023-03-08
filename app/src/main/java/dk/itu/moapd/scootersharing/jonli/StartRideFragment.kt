@@ -54,7 +54,7 @@ class StartRideFragment : Fragment() {
 
     private fun showMessage() {
         val scooter = ridesDB.getCurrentScooter()
-        val message = "Ride started using Scooter(name=${scooter.name}, location=${scooter.location})."
+        val message = "Ride started using Scooter(name=${scooter.name}, at location=${scooter.location})."
         Snackbar.make(
             binding.root,
             message,
