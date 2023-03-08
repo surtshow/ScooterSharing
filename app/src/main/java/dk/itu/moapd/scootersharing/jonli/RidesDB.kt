@@ -38,6 +38,10 @@ class RidesDB private constructor(context: Context) {
         return rides.last().toString()
     }
 
+    fun deleteRide(scooter: Scooter) {
+        rides.remove(scooter)
+    }
+
     /**
      * Generate a random timestamp in the last 365 days.
      *
