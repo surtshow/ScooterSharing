@@ -6,6 +6,7 @@ import dk.itu.moapd.scootersharing.jonli.databinding.ActivityMainBinding
 
 /**
  * The main activity of the application.
+ * This activity is responsible for displaying the main fragment.
  */
 class MainActivity : AppCompatActivity() {
 

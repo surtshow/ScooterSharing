@@ -33,6 +33,16 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Called immediately after onCreateView() has returned,
+     * but before any saved state has been restored in to the view.
+     *
+     * Sets up listeners for each of the buttons on the MainFragment page.
+     *
+     * @param view The View returned by onCreateView().
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous
+     * saved state as given here.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
