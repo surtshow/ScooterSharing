@@ -7,6 +7,7 @@ import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
 
 class CustomArrayAdapter(
     private val data: List<Scooter>,
+    private val onClick: (Scooter) -> Boolean,
 ) :
     RecyclerView.Adapter<CustomArrayAdapter.ViewHolder>() {
 
@@ -20,14 +21,15 @@ class CustomArrayAdapter(
     override fun getItemCount() = data.size
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val scooter = data[position]
-        holder.bind(scooter)
+        holder.bind(scooter, onClick)
     }
 
     class ViewHolder(private val binding: ListRidesBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(scooter: Scooter) {
+        fun bind(scooter: Scooter, onClick: (Scooter) -> Boolean) {
             binding.title.text = scooter.name
             binding.description.text = scooter.toString()
+            binding.root.setOnLongClickListener { onClick(scooter) }
         }
     }
 }

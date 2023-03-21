@@ -15,14 +15,25 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
 
     companion object {
+        fun dataChanged() {
+            adapter.notifyDataSetChanged()
+        }
+
         lateinit var ridesDB: RidesDB
         private lateinit var adapter: CustomArrayAdapter
+        lateinit var scooterToDelete: Scooter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ridesDB = RidesDB.get(this.requireContext())
-        adapter = CustomArrayAdapter(ridesDB.getRidesList())
+        adapter = CustomArrayAdapter(ridesDB.getRidesList()) { scooter ->
+            scooterToDelete = scooter
+            DeleteScooterFragment
+                .newInstance(scooter.name)
+                .show(parentFragmentManager, DeleteScooterFragment.TAG)
+            true
+        }
     }
 
     override fun onCreateView(
@@ -31,8 +42,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView?.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView?.adapter = adapter
         return binding.root
     }
 
