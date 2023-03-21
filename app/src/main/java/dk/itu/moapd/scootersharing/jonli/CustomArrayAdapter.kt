@@ -1,44 +1,33 @@
 package dk.itu.moapd.scootersharing.jonli
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
 
 class CustomArrayAdapter(
-    context: Context,
-    private var resource: Int,
-    data: List<Scooter>,
+    private val data: List<Scooter>,
 ) :
-    ArrayAdapter<Scooter>(context, R.layout.list_rides, data) {
+    RecyclerView.Adapter<CustomArrayAdapter.ViewHolder>() {
 
-    private class ViewHolder(view: View) {
-        val title: TextView = view.findViewById(R.id.title)
-        val description: TextView = view.findViewById(R.id.description)
+    override fun onCreateViewHolder
+    (parent: ViewGroup, viewType: Int): ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ListRidesBinding.inflate(inflater, parent, false)
+        return ViewHolder(binding)
     }
 
-    override fun getView(
-        position: Int,
-        convertView: View?,
-        parent: ViewGroup,
-    ): View {
-        var view = convertView
-        val viewHolder: ViewHolder
+    override fun getItemCount() = data.size
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val scooter = data[position]
+        holder.bind(scooter)
+    }
 
-        if (view == null) {
-            val inflater = LayoutInflater.from(context)
-            view = inflater.inflate(resource, parent, false)
-            viewHolder = ViewHolder(view)
-        } else {
-            viewHolder = view.tag as ViewHolder
+    class ViewHolder(private val binding: ListRidesBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(scooter: Scooter) {
+            binding.title.text = scooter.name
+            binding.description.text = scooter.toString()
         }
-        val dummy = getItem(position)
-        viewHolder.title.text = dummy?.name
-        viewHolder.description.text = dummy.toString()
-
-        view?.tag = viewHolder
-        return view!!
     }
 }
