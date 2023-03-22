@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing.jonli
+package dk.itu.moapd.scootersharing.jonli.models
 
 /**
  * This class represents a scooter.

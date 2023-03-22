@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing.jonli
+package dk.itu.moapd.scootersharing.jonli.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import dk.itu.moapd.scootersharing.jonli.RidesDB
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentUpdateRideBinding
 
 class UpdateRideFragment : Fragment() {

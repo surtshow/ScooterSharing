@@ -1,9 +1,10 @@
-package dk.itu.moapd.scootersharing.jonli
+package dk.itu.moapd.scootersharing.jonli.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
+import dk.itu.moapd.scootersharing.jonli.models.Scooter
 
 class CustomArrayAdapter(
     private val data: List<Scooter>,

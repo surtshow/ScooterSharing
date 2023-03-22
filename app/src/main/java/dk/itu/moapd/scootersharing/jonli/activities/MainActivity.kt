@@ -1,9 +1,11 @@
-package dk.itu.moapd.scootersharing.jonli
+package dk.itu.moapd.scootersharing.jonli.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import dk.itu.moapd.scootersharing.jonli.databinding.ActivityMainBinding
+import dk.itu.moapd.scootersharing.jonli.fragments.DeleteScooterFragment
+import dk.itu.moapd.scootersharing.jonli.fragments.MainFragment
 
 /**
  * The main activity of the application.

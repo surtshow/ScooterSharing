@@ -1,14 +1,17 @@
-package dk.itu.moapd.scootersharing.jonli
+package dk.itu.moapd.scootersharing.jonli.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import dk.itu.moapd.scootersharing.jonli.R
+import dk.itu.moapd.scootersharing.jonli.RidesDB
+import dk.itu.moapd.scootersharing.jonli.adapters.CustomArrayAdapter
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMainBinding
+import dk.itu.moapd.scootersharing.jonli.models.Scooter
 
 class MainFragment : Fragment() {
 
@@ -29,8 +32,7 @@ class MainFragment : Fragment() {
         ridesDB = RidesDB.get(this.requireContext())
         adapter = CustomArrayAdapter(ridesDB.getRidesList()) { scooter ->
             scooterToDelete = scooter
-            DeleteScooterFragment
-                .newInstance(scooter.name)
+            DeleteScooterFragment.newInstance(scooter.name)
                 .show(parentFragmentManager, DeleteScooterFragment.TAG)
             true
         }

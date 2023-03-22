@@ -1,4 +1,4 @@
-package dk.itu.moapd.scootersharing.jonli
+package dk.itu.moapd.scootersharing.jonli.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
