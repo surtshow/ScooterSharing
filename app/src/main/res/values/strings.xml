@@ -6,4 +6,6 @@
     <string name="update_ride_button">Update Ride</string>
     <string name="scooter_sharing">ScooterSharing</string>
     <string name="list_rides_button">List Rides</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
 </resources>
