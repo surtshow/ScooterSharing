@@ -2,16 +2,16 @@ package dk.itu.moapd.scootersharing.jonli.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI.setupWithNavController
+import dk.itu.moapd.scootersharing.jonli.R
 import dk.itu.moapd.scootersharing.jonli.databinding.ActivityMainBinding
-import dk.itu.moapd.scootersharing.jonli.fragments.DeleteScooterFragment
-import dk.itu.moapd.scootersharing.jonli.fragments.MainFragment
 
 /**
  * The main activity of the application.
  * This activity is responsible for displaying the main fragment.
  */
-class MainActivity : AppCompatActivity(), DeleteScooterFragment.DeleteScooterListener {
+class MainActivity : AppCompatActivity() {
 
     /**
      * The binding object instance which is used to access
@@ -30,10 +30,30 @@ class MainActivity : AppCompatActivity(), DeleteScooterFragment.DeleteScooterLis
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-    }
 
-    override fun onDialogPositiveClick(dialog: DialogFragment) {
-        MainFragment.ridesDB.deleteRide(MainFragment.scooterToDelete)
-        MainFragment.dataChanged()
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        // This line might not be needed
+        setupWithNavController(binding.bottomAppBar, navController)
+
+        binding.bottomAppBar.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.mainFragment -> {
+                    navController.navigate(R.id.mainFragment)
+                    true
+                }
+                R.id.scooterListFragment -> {
+                    navController.navigate(R.id.scooterListFragment)
+                    true
+                }
+                R.id.profileFragment -> {
+                    navController.navigate(R.id.profileFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 }

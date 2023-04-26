@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <item
+        android:id="@+id/mainFragment"
+        android:icon="@drawable/ic_baseline_map_24"
+        app:showAsAction="ifRoom"
+        android:title="QR code scanner" />
+
+    <item
+        android:id="@+id/scooterListFragment"
+        android:icon="@drawable/ic_baseline_format_list_bulleted_24"
+        app:showAsAction="ifRoom"
+        android:title="Scooter list" />
+
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_baseline_person_24"
+        app:showAsAction="ifRoom"
+        android:title="Scooter details" />
+
+</menu>

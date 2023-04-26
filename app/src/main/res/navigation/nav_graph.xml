@@ -16,6 +16,12 @@
         <action
             android:id="@+id/action_mainFragment_to_updateRideFragment"
             app:destination="@id/updateRideFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_scooterDetailsFragment"
+            app:destination="@id/scooterDetailsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/startRideFragment"
@@ -27,5 +33,20 @@
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.UpdateRideFragment"
         android:label="UpdateRideFragment"
         tools:layout="@layout/fragment_update_ride" />
+    <fragment
+        android:id="@+id/scooterDetailsFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterDetailsFragment"
+        android:label="ScooterDetailsFragment"
+        tools:layout="@layout/fragment_scooter_details" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/scooterListFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterListFragment"
+        android:label="ScooterListFragment"
+        tools:layout="@layout/fragment_scooter_list" />
 
 </navigation>

@@ -8,15 +8,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.scootersharing.jonli.R
-import dk.itu.moapd.scootersharing.jonli.RidesDB
 import dk.itu.moapd.scootersharing.jonli.activities.LoginActivity
-import dk.itu.moapd.scootersharing.jonli.adapters.CustomArrayAdapter
+import dk.itu.moapd.scootersharing.jonli.adapters.ScooterArrayAdapter
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMainBinding
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
 
 class MainFragment : Fragment() {
+
+    val DATABASE_URL =
+        "https://scooter-sharing-b2ed6-default-rtdb.europe-west1.firebasedatabase.app/"
 
     private lateinit var binding: FragmentMainBinding
 
@@ -27,21 +33,29 @@ class MainFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
 
-        lateinit var ridesDB: RidesDB
-        private lateinit var adapter: CustomArrayAdapter
+        lateinit var database: DatabaseReference
+        private lateinit var adapter: ScooterArrayAdapter
         lateinit var scooterToDelete: Scooter
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ridesDB = RidesDB.get(this.requireContext())
-        adapter = CustomArrayAdapter(ridesDB.getRidesList()) { scooter ->
-            scooterToDelete = scooter
-            DeleteScooterFragment.newInstance(scooter.name)
-                .show(parentFragmentManager, DeleteScooterFragment.TAG)
-            true
-        }
         auth = FirebaseAuth.getInstance()
+        database = Firebase.database(DATABASE_URL).reference
+        // database.keepSynced(true)
+
+        auth.currentUser?.let {
+            val query = database.child("scooters")
+                .child(it.uid)
+            val options = FirebaseRecyclerOptions.Builder<Scooter>()
+                .setQuery(query, Scooter::class.java)
+                .setLifecycleOwner(this)
+                .build()
+
+            adapter = ScooterArrayAdapter(
+                options,
+            )
+        }
     }
 
     override fun onCreateView(
@@ -50,8 +64,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
-        binding.recyclerView?.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView?.adapter = adapter
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = adapter
         return binding.root
     }
 
