@@ -17,6 +17,12 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        Properties properties = new Properties()
+        properties.load(
+                project.rootProject.file('local.properties').newDataInputStream())
+        manifestPlaceholders = [
+                MAPS_API_KEY: "${properties.getProperty('MAPS_API_KEY')}"]
     }
 
     buildTypes {
@@ -45,6 +51,10 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.5.0'
 
     implementation 'com.google.android.material:material:1.8.0'
 

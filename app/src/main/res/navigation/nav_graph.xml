@@ -48,5 +48,10 @@
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterListFragment"
         android:label="ScooterListFragment"
         tools:layout="@layout/fragment_scooter_list" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.MapFragment"
+        android:label="MapFragment"
+        tools:layout="@layout/fragment_map" />
 
 </navigation>

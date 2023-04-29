@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.mainFragment)
                     true
                 }
+                R.id.mapFragment -> {
+                    navController.navigate(R.id.mapFragment)
+                    true
+                }
                 R.id.scooterListFragment -> {
                     navController.navigate(R.id.scooterListFragment)
                     true
