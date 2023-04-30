@@ -10,7 +10,10 @@ data class Scooter(
     val name: String? = null,
     var location: String? = null,
     var timestamp: Long = System.currentTimeMillis(),
+    var isAvailable: Boolean = true,
     var image: String? = null,
+    var latitude: Double? = null,
+    var longitude: Double? = null,
 ) {
     override fun toString(): String {
         return "[Scooter] $name is placed at $location"

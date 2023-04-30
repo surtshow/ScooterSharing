@@ -1,3 +1,4 @@
 package dk.itu.moapd.scootersharing.jonli.viewmodels
 
-class MainViewModel : BaseViewModel()
+class MapViewModel {
+}

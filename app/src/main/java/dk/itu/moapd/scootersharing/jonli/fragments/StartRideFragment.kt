@@ -8,8 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
 import dk.itu.moapd.scootersharing.jonli.RidesDB
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentStartRideBinding
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
@@ -21,7 +19,6 @@ class StartRideFragment : Fragment() {
     private lateinit var binding: FragmentStartRideBinding
     private lateinit var viewModel: StartRideViewModel
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
 
     companion object {
         lateinit var ridesDB: RidesDB
@@ -30,7 +27,6 @@ class StartRideFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
-        database = MainFragment.database
         ridesDB = RidesDB.get(this.requireContext())
     }
 
@@ -41,7 +37,7 @@ class StartRideFragment : Fragment() {
     ): View {
         binding = FragmentStartRideBinding.inflate(layoutInflater, container, false)
 
-        val viewModelFactory = StartRideViewModelFactory(auth, database)
+        val viewModelFactory = StartRideViewModelFactory()
         viewModel = ViewModelProvider(this, viewModelFactory)[StartRideViewModel::class.java]
 
         return binding.root

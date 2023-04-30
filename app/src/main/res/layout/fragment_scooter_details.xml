@@ -18,6 +18,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
@@ -50,14 +51,17 @@
                 tools:text="hey" />
 
             <Button
+                android:id="@+id/reserve_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="64dp"
                 android:text="Edit"/>
 
             <Button
-                android:layout_width="wrap_content"
+                android:id="@+id/start_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="64dp"
                 android:text="Edit"/>
 
         </LinearLayout>

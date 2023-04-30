@@ -10,7 +10,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.scootersharing.jonli.R
@@ -28,20 +27,12 @@ class MainFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
 
-    companion object {
-        fun dataChanged() {
-            adapter.notifyDataSetChanged()
-        }
-
-        lateinit var database: DatabaseReference
-        private lateinit var adapter: ScooterArrayAdapter
-        lateinit var scooterToDelete: Scooter
-    }
+    private lateinit var adapter: ScooterArrayAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
-        database = Firebase.database(DATABASE_URL).reference
+        val database = Firebase.database(DATABASE_URL).reference
         // database.keepSynced(true)
 
         auth.currentUser?.let {
@@ -54,7 +45,10 @@ class MainFragment : Fragment() {
 
             adapter = ScooterArrayAdapter(
                 options,
-            )
+            ) { key ->
+                findNavController()
+                    .navigate(MainFragmentDirections.actionMainFragmentToScooterDetailsFragment(key))
+            }
         }
     }
 

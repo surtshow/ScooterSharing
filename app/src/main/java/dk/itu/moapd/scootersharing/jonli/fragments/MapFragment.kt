@@ -10,15 +10,22 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMapBinding
 
-class MapFragment : Fragment() {
+class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private lateinit var locationCallback: LocationCallback
+
+    private lateinit var map: GoogleMap
 
     companion object {
         private const val ALL_PERMISSIONS_RESULT = 1011
@@ -30,9 +37,22 @@ class MapFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = FragmentMapBinding.inflate(layoutInflater, container, false)
+
+        val gMapFragment = childFragmentManager.findFragmentById(binding.googleMaps.id) as SupportMapFragment
+        gMapFragment.getMapAsync(this)
+
         startLocationAwareness()
-        subscribeToLocationUpdates()
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        subscribeToLocationUpdates()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unsubscribeToLocationUpdates()
     }
 
     private fun startLocationAwareness() {
@@ -45,7 +65,12 @@ class MapFragment : Fragment() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 locationResult.lastLocation?.let {
-                    binding.locationText.text = "Lat: ${it.latitude}, Lng: ${it.longitude}"
+                    map.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(
+                            LatLng(it.latitude, it.longitude),
+                            15f,
+                        ),
+                    )
                 }
             }
         }
@@ -111,4 +136,27 @@ class MapFragment : Fragment() {
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ) != PackageManager.PERMISSION_GRANTED
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        if (checkPermission()) {
+            return
+        }
+
+        googleMap.isMyLocationEnabled = true
+
+        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
+
+        googleMap.uiSettings.apply {
+            isCompassEnabled = true
+            isIndoorLevelPickerEnabled = true
+            isMyLocationButtonEnabled = true
+            isRotateGesturesEnabled = true
+            isScrollGesturesEnabled = true
+            isTiltGesturesEnabled = true
+            isZoomControlsEnabled = true
+            isZoomGesturesEnabled = true
+        }
+
+        map = googleMap
+    }
 }

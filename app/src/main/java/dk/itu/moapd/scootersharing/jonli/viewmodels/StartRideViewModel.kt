@@ -2,16 +2,11 @@ package dk.itu.moapd.scootersharing.jonli.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
 import java.util.*
 
-class StartRideViewModel(
-    private var auth: FirebaseAuth,
-    private var database: DatabaseReference,
-) : ViewModel() {
+class StartRideViewModel : BaseViewModel() {
 
     fun createRide(name: String, location: String): Scooter {
         val scooter = Scooter(name, location)
@@ -32,15 +27,11 @@ class StartRideViewModel(
     }
 }
 
-class StartRideViewModelFactory(
-    private val auth: FirebaseAuth,
-    private val database: DatabaseReference,
-) :
-    ViewModelProvider.Factory {
+class StartRideViewModelFactory : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(StartRideViewModel::class.java)) {
-            return StartRideViewModel(auth, database) as T
+            return StartRideViewModel() as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

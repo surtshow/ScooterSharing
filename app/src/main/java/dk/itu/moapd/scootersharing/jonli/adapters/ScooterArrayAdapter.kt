@@ -13,8 +13,8 @@ import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
 
 class ScooterArrayAdapter(
-    // private val itemClickListener: (Scooter) -> Boolean,
     options: FirebaseRecyclerOptions<Scooter>,
+    private val onClick: (String) -> Unit,
 ) :
     FirebaseRecyclerAdapter<Scooter, ScooterArrayAdapter.ViewHolder>(options) {
 
@@ -25,21 +25,26 @@ class ScooterArrayAdapter(
         return ViewHolder(binding)
     }
 
+    override fun getItemCount() = super.getItemCount()
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int, scooter: Scooter) {
+        val key = this.getRef(position).key
         holder.apply {
-            bind(scooter)
-//            itemView.setOnLongClickListener {
-//                itemClickListener(scooter)
-//            }
+            bind(scooter, key, onClick)
         }
     }
 
     class ViewHolder(private val binding: ListRidesBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(scooter: Scooter) {
+        fun bind(scooter: Scooter, key: String?, onClick: (String) -> Unit) {
             binding.title.text = scooter.name
             binding.description.text = scooter.toString()
+            binding.scooterLayout.setOnClickListener {
+                key?.let {
+                    onClick(it)
+                }
+            }
 
             // Get the public thumbnail URL.
             val storage = Firebase.storage(Companion.BUCKET_URL)

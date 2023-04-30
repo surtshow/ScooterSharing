@@ -37,7 +37,11 @@
         android:id="@+id/scooterDetailsFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterDetailsFragment"
         android:label="ScooterDetailsFragment"
-        tools:layout="@layout/fragment_scooter_details" />
+        tools:layout="@layout/fragment_scooter_details" >
+        <argument
+            android:name="scooterId"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ProfileFragment"
@@ -47,7 +51,11 @@
         android:id="@+id/scooterListFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterListFragment"
         android:label="ScooterListFragment"
-        tools:layout="@layout/fragment_scooter_list" />
+        tools:layout="@layout/fragment_scooter_list" >
+        <action
+            android:id="@+id/action_scooterListFragment_to_scooterDetailsFragment"
+            app:destination="@id/scooterDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.MapFragment"
