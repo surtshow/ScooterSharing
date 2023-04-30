@@ -9,16 +9,22 @@ import java.util.*
 class StartRideViewModel : BaseViewModel() {
 
     fun createRide(name: String, location: String): Scooter {
-        val scooter = Scooter(name, location)
+        val scooter = Scooter(
+            name,
+            location,
+            System.currentTimeMillis(),
+            true,
+            "upan.png",
+            null,
+            null,
+        )
         auth.currentUser?.let { user ->
             val uid = database.child("scooters")
-                .child(user.uid)
                 .push()
                 .key
 
             uid?.let {
                 database.child("scooters")
-                    .child(user.uid)
                     .child(it)
                     .setValue(scooter)
             }

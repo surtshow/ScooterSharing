@@ -33,8 +33,7 @@ class ScooterListFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         viewModel.auth.currentUser?.let {
-            val query = viewModel.database.child("scooters")
-                .child(it.uid)
+            val query = viewModel.database.child("scooters").orderByChild("available").equalTo(true)
 
             val options = FirebaseRecyclerOptions.Builder<Scooter>()
                 .setQuery(query, Scooter::class.java)

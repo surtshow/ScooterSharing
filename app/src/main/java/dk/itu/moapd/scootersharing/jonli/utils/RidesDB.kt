@@ -5,6 +5,9 @@ import dk.itu.moapd.scootersharing.jonli.models.Scooter
 import java.util.Random
 import kotlin.collections.ArrayList
 
+/**
+ * This class is no longer in use.
+ */
 class RidesDB private constructor(context: Context) {
 
     private val rides = ArrayList<Scooter>()

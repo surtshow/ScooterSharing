@@ -1,61 +1,62 @@
-package dk.itu.moapd.scootersharing.jonli.fragments
+package dk.itu.moapd.scootersharing.jonli.services
 
 import android.Manifest
+import android.app.Service
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Bundle
+import android.os.Binder
+import android.os.IBinder
 import android.os.Looper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.fragment.app.Fragment
+import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMapBinding
+import dk.itu.moapd.scootersharing.jonli.activities.MainActivity
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+interface LocationListener {
+    fun onLocationChanged(location: LatLng)
+}
 
-    private lateinit var binding: FragmentMapBinding
+class LocationService : Service() {
+
+    private var listener: LocationListener? = null
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private lateinit var locationCallback: LocationCallback
 
-    private lateinit var map: GoogleMap
-
     companion object {
         private const val ALL_PERMISSIONS_RESULT = 1011
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentMapBinding.inflate(layoutInflater, container, false)
+    private val binder = LocationBinder()
 
-        val gMapFragment =
-            childFragmentManager.findFragmentById(binding.googleMaps.id) as SupportMapFragment
-        gMapFragment.getMapAsync(this)
+    inner class LocationBinder : Binder() {
+        fun getService(): LocationService = this@LocationService
+    }
 
+    override fun onBind(intent: Intent): IBinder {
         startLocationAwareness()
-        return binding.root
-    }
-
-    override fun onResume() {
-        super.onResume()
         subscribeToLocationUpdates()
+        return binder
     }
 
-    override fun onPause() {
-        super.onPause()
+    fun setListener(listener: LocationListener) {
+        this.listener = listener
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startLocationAwareness()
+        subscribeToLocationUpdates()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onDestroy() {
         unsubscribeToLocationUpdates()
+        super.onDestroy()
     }
 
-    private fun getLastLocation(): LatLng? {
+    fun getLastLocation(): LatLng? {
         if (checkPermission()) {
             return null
         }
@@ -68,13 +69,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         requestLocationPermission()
 
         fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
+            LocationServices.getFusedLocationProviderClient(this)
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 locationResult.lastLocation?.let {
-                    // do nothing
+                    listener?.onLocationChanged(LatLng(it.latitude, it.longitude))
                 }
             }
         }
@@ -118,48 +119,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val permissionsToRequest = permissionsToRequest(permissions)
 
         if (permissionsToRequest.isNotEmpty()) {
-            requestPermissions(permissionsToRequest.toTypedArray(), ALL_PERMISSIONS_RESULT)
+            requestPermissions(
+                MainActivity(),
+                permissionsToRequest.toTypedArray(),
+                ALL_PERMISSIONS_RESULT,
+            )
         }
     }
 
     private fun permissionsToRequest(permissions: Array<String>): ArrayList<String> {
         val result: ArrayList<String> = ArrayList()
         for (permission in permissions)
-            if (checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 result.add(permission)
             }
         return result
     }
 
-    private fun checkPermission() =
-        checkSelfPermission(
-            requireContext(),
+    fun checkPermission() =
+        ContextCompat.checkSelfPermission(
+            this,
             Manifest.permission.ACCESS_FINE_LOCATION,
         ) != PackageManager.PERMISSION_GRANTED &&
-            checkSelfPermission(
-                requireContext(),
+            ContextCompat.checkSelfPermission(
+                this,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ) != PackageManager.PERMISSION_GRANTED
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        if (checkPermission()) {
-            return
-        }
-
-        googleMap.isMyLocationEnabled = true
-
-        googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
-
-        googleMap.uiSettings.apply {
-            isCompassEnabled = true
-            isIndoorLevelPickerEnabled = true
-            isMyLocationButtonEnabled = true
-            isRotateGesturesEnabled = true
-            isScrollGesturesEnabled = true
-            isTiltGesturesEnabled = true
-            isZoomControlsEnabled = true
-            isZoomGesturesEnabled = true
-        }
-        map = googleMap
-    }
 }

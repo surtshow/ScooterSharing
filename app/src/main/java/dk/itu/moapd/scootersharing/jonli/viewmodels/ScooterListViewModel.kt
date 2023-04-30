@@ -21,7 +21,6 @@ class ScooterListViewModel : BaseViewModel() {
     private fun getScooters() {
         auth.currentUser?.let {
             val query = database.child("scooters")
-                .child(it.uid)
 
             val options = FirebaseRecyclerOptions.Builder<Scooter>()
                 .setQuery(query, Scooter::class.java)
