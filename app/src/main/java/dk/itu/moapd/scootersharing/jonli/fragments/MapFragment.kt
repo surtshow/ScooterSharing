@@ -1,14 +1,9 @@
 package dk.itu.moapd.scootersharing.jonli.fragments
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
@@ -21,21 +16,13 @@ import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMapBinding
 import dk.itu.moapd.scootersharing.jonli.viewmodels.MapViewModel
 import dk.itu.moapd.scootersharing.jonli.viewmodels.MapViewModelFactory
 
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : BaseFragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
 
     private lateinit var viewModel: MapViewModel
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
-    private lateinit var locationCallback: LocationCallback
-
     private lateinit var map: GoogleMap
-
-    companion object {
-        private const val ALL_PERMISSIONS_RESULT = 1011
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,11 +34,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val viewModelFactory = MapViewModelFactory()
         viewModel = ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java]
 
+        requestLocationPermission()
+
         val gMapFragment =
             childFragmentManager.findFragmentById(binding.googleMaps.id) as SupportMapFragment
         gMapFragment.getMapAsync(this)
 
-        startLocationAwareness()
         return binding.root
     }
 
@@ -76,102 +64,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-        subscribeToLocationUpdates()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        unsubscribeToLocationUpdates()
-    }
-
-    private fun getLastLocation(): LatLng? {
-        if (checkPermission()) {
-            return null
-        }
-
-        val location = fusedLocationProviderClient.lastLocation.result
-        return LatLng(location.latitude, location.longitude)
-    }
-
-    private fun startLocationAwareness() {
-        requestLocationPermission()
-
-        fusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
-                locationResult.lastLocation?.let {
-                    // do nothing
-                }
-            }
-        }
-    }
-
-    @Suppress("MagicNumber")
-    private fun subscribeToLocationUpdates() {
-        // Check if the user allows the application to access the location-aware resources.
-        if (checkPermission()) {
-            return
-        }
-
-        // Sets the accuracy and desired interval for active location updates.
-        val locationRequest = LocationRequest
-            .Builder(Priority.PRIORITY_HIGH_ACCURACY, 5)
-            .build()
-
-        // Subscribe to location changes.
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback,
-            Looper.getMainLooper(),
-        )
-    }
-
-    /**
-     * Unsubscribes this application of getting the location changes from  the `locationCallback()`.
-     */
-    private fun unsubscribeToLocationUpdates() {
-        // Unsubscribe to location changes.
-        fusedLocationProviderClient
-            .removeLocationUpdates(locationCallback)
-    }
-
-    private fun requestLocationPermission() {
-        val permissions: Array<String> = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-        )
-
-        val permissionsToRequest = permissionsToRequest(permissions)
-
-        if (permissionsToRequest.isNotEmpty()) {
-            requestPermissions(permissionsToRequest.toTypedArray(), ALL_PERMISSIONS_RESULT)
-        }
-    }
-
-    private fun permissionsToRequest(permissions: Array<String>): ArrayList<String> {
-        val result: ArrayList<String> = ArrayList()
-        for (permission in permissions)
-            if (checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-                result.add(permission)
-            }
-        return result
-    }
-
-    private fun checkPermission() =
-        checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        ) != PackageManager.PERMISSION_GRANTED &&
-            checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-            ) != PackageManager.PERMISSION_GRANTED
 
     override fun onMapReady(googleMap: GoogleMap) {
         if (checkPermission()) {
