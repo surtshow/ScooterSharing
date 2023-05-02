@@ -10,8 +10,11 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.gms.location.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.maps.model.LatLng
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentScooterDetailsBinding
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
@@ -102,6 +105,19 @@ class ScooterDetailsFragment : Fragment() {
                 } else {
                     binding.reserveButton.text = "Cancel reservation"
                 }
+
+                binding.scooterPicture.setImageResource(0)
+
+                // Download and set an image into the ImageView.
+                viewModel.getScooterImage()
+                    .downloadUrl
+                    .addOnSuccessListener { uri ->
+                        Glide.with(this)
+                            .load(uri)
+                            .transition(DrawableTransitionOptions.withCrossFade())
+                            .centerCrop()
+                            .into(binding.scooterPicture)
+                    }
             }
         }
         viewModel.ride.observe(viewLifecycleOwner) {
@@ -124,6 +140,11 @@ class ScooterDetailsFragment : Fragment() {
 
         binding.startButton.setOnClickListener {
             viewModel.changeStartStatus()
+        }
+
+        binding.photoButton.setOnClickListener {
+            findNavController()
+                .navigate(ScooterDetailsFragmentDirections.actionScooterDetailsFragmentToCameraFragment(args.scooterId))
         }
     }
 

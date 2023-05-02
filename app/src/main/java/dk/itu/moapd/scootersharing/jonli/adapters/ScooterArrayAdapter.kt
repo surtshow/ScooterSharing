@@ -9,7 +9,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
+import dk.itu.moapd.scootersharing.jonli.databinding.ListScootersBinding
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
 
 class ScooterArrayAdapter(
@@ -21,7 +21,7 @@ class ScooterArrayAdapter(
     override fun onCreateViewHolder
     (parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ListRidesBinding.inflate(inflater, parent, false)
+        val binding = ListScootersBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -34,7 +34,7 @@ class ScooterArrayAdapter(
         }
     }
 
-    class ViewHolder(private val binding: ListRidesBinding) :
+    class ViewHolder(private val binding: ListScootersBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(scooter: Scooter, key: String?, onClick: (String) -> Unit) {
@@ -47,7 +47,7 @@ class ScooterArrayAdapter(
             }
 
             // Get the public thumbnail URL.
-            val storage = Firebase.storage(Companion.BUCKET_URL)
+            val storage = Firebase.storage(BUCKET_URL)
             val imageRef = storage.reference.child("${scooter.image}")
 
             // Clean the image UI component.

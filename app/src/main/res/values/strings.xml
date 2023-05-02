@@ -16,4 +16,5 @@
     <string name="main">Main</string>
     <string name="reserve">Reserve</string>
     <string name="start_ride">Start ride</string>
+    <string name="take_photo">Take photo</string>
 </resources>

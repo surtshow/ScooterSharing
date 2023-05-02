@@ -41,12 +41,19 @@
         <argument
             android:name="scooterId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_scooterDetailsFragment_to_cameraFragment"
+            app:destination="@id/cameraFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_rideListFragment"
+            app:destination="@id/rideListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/scooterListFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterListFragment"
@@ -60,6 +67,24 @@
         android:id="@+id/mapFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.MapFragment"
         android:label="MapFragment"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_mapFragment_to_scooterDetailsFragment"
+            app:destination="@id/scooterDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/rideListFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.RideListFragment"
+        android:label="RideListFragment"
+        tools:layout="@layout/fragment_ride_list" />
+    <fragment
+        android:id="@+id/cameraFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.CameraFragment"
+        android:label="CameraFragment"
+        tools:layout="@layout/fragment_camera" >
+        <argument
+            android:name="scooterId"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

@@ -9,16 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMapBinding
+import dk.itu.moapd.scootersharing.jonli.viewmodels.MapViewModel
+import dk.itu.moapd.scootersharing.jonli.viewmodels.MapViewModelFactory
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var binding: FragmentMapBinding
+
+    private lateinit var viewModel: MapViewModel
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -37,12 +44,37 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     ): View {
         binding = FragmentMapBinding.inflate(layoutInflater, container, false)
 
+        val viewModelFactory = MapViewModelFactory()
+        viewModel = ViewModelProvider(this, viewModelFactory)[MapViewModel::class.java]
+
         val gMapFragment =
             childFragmentManager.findFragmentById(binding.googleMaps.id) as SupportMapFragment
         gMapFragment.getMapAsync(this)
 
         startLocationAwareness()
         return binding.root
+    }
+
+    private fun setupObservers() {
+        viewModel.scooters.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it.isNotEmpty()) {
+                    for (scooterPair in it) {
+                        val scooter = scooterPair.second
+
+                        scooter?.latitude?.let { latitude ->
+                            scooter.longitude?.let { longitude ->
+                                map.addMarker(
+                                    MarkerOptions()
+                                        .position(LatLng(latitude, longitude))
+                                        .title(scooterPair.first),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -161,5 +193,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             isZoomGesturesEnabled = true
         }
         map = googleMap
+
+        val ituPosition = LatLng(55.6596, 12.5910)
+
+        map.moveCamera(
+            com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom(
+                ituPosition,
+                15f,
+            ),
+        )
+
+        map.setOnMarkerClickListener { marker ->
+            val scooter = marker.title
+            scooter?.let {
+                val action = MapFragmentDirections.actionMapFragmentToScooterDetailsFragment(it)
+                findNavController()
+                    .navigate(action)
+            }
+            true
+        }
+
+        setupObservers()
     }
 }

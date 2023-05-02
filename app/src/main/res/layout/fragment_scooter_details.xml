@@ -64,6 +64,13 @@
                 android:layout_marginHorizontal="64dp"
                 android:text="@string/start_ride"/>
 
+            <Button
+                android:id="@+id/photo_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="64dp"
+                android:text="@string/take_photo"/>
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

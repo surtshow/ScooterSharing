@@ -6,8 +6,10 @@ import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
 @IgnoreExtraProperties
 data class Ride(
     val scooterId: String? = null,
-    var startLocation: Pair<Double, Double>? = null,
-    var endLocation: Pair<Double, Double>? = null,
+    var startLatitude: Double? = null,
+    var startLongitude: Double? = null,
+    var endLatitude: Double? = null,
+    var endLongitude: Double? = null,
     var reserveTime: Long? = null,
     var startTime: Long? = null,
     var endTime: Long? = null,

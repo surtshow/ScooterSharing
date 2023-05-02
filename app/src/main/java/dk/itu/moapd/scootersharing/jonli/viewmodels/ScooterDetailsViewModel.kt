@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.storage.StorageReference
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
 import dk.itu.moapd.scootersharing.jonli.models.Ride
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
@@ -56,6 +57,15 @@ class ScooterDetailsViewModel(
 //                }
 //        }
 //    }
+
+    fun getScooterImage(): StorageReference {
+        scooter.value?.let {
+            it.image?.let { image ->
+                return storage.reference.child(image)
+            }
+        }
+        return storage.reference.child("upan.png")
+    }
 
     fun changeReserveStatus() {
         if (scooter.value?.isAvailable == true) {
@@ -111,6 +121,8 @@ class ScooterDetailsViewModel(
                         scooterId,
                         null,
                         null,
+                        null,
+                        null,
                         System.currentTimeMillis(),
                         null,
                         null,
@@ -145,7 +157,8 @@ class ScooterDetailsViewModel(
             ride.value?.let {
                 it.startTime = System.currentTimeMillis()
                 it.status = RideStatus.STARTED
-                it.startLocation = Pair(location.latitude, location.longitude)
+                it.startLatitude = location.latitude
+                it.startLongitude = location.longitude
                 updateRide(it)
             }
         } else {
@@ -160,7 +173,9 @@ class ScooterDetailsViewModel(
                     updateRide(
                         Ride(
                             scooterId,
-                            Pair(location.latitude, location.longitude),
+                            location.latitude,
+                            location.longitude,
+                            null,
                             null,
                             null,
                             System.currentTimeMillis(),
@@ -186,7 +201,8 @@ class ScooterDetailsViewModel(
         ride.value?.let {
             it.endTime = System.currentTimeMillis()
             it.status = RideStatus.ENDED
-            it.endLocation = Pair(location.latitude, location.longitude)
+            it.endLatitude = location.latitude
+            it.endLongitude = location.longitude
             updateRide(it)
             ride.value = null
         }
