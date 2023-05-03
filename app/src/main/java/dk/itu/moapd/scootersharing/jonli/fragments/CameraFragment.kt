@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.* // ktlint-disable no-wildcard-imports
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
@@ -203,7 +204,17 @@ class CameraFragment : Fragment() {
                         compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
                         val imageBytes = outputStream.toByteArray()
 
-                        viewModel.updateScooterPicture(imageBytes)
+                        viewModel.updateScooterPicture(imageBytes) {
+                            val builder = AlertDialog.Builder(requireContext())
+                            builder.setTitle("Image saved")
+                                .setPositiveButton(
+                                    "OK",
+                                ) { dialog, _ ->
+                                    dialog.dismiss()
+                                    builder.create()
+                                    builder.show()
+                                }
+                        }
                     }
                 }
 

@@ -42,16 +42,18 @@ class CameraViewModel(
         }
     }
 
-    fun updateScooterPicture(imageByteArray: ByteArray) {
+    fun updateScooterPicture(imageByteArray: ByteArray, callback: () -> Unit) {
         viewModelScope.launch {
             imageRef.putBytes(imageByteArray)
         }
         scooter.image = imageRef.path
+        scooter.imageIsUpdated = true
         auth.currentUser?.let {
             database.child("scooters")
                 .child(scooterId)
                 .setValue(scooter)
         }
+        callback()
     }
 }
 

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/scooterListFragment">
 
     <fragment
         android:id="@+id/mainFragment"
@@ -19,9 +19,6 @@
         <action
             android:id="@+id/action_mainFragment_to_scooterDetailsFragment"
             app:destination="@id/scooterDetailsFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/startRideFragment"
@@ -44,6 +41,13 @@
         <action
             android:id="@+id/action_scooterDetailsFragment_to_cameraFragment"
             app:destination="@id/cameraFragment" />
+        <argument
+            android:name="rideId"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_scooterDetailsFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -53,6 +57,12 @@
         <action
             android:id="@+id/action_profileFragment_to_rideListFragment"
             app:destination="@id/rideListFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_balanceFragment"
+            app:destination="@id/balanceFragment" />
     </fragment>
     <fragment
         android:id="@+id/scooterListFragment"
@@ -62,6 +72,9 @@
         <action
             android:id="@+id/action_scooterListFragment_to_scooterDetailsFragment"
             app:destination="@id/scooterDetailsFragment" />
+        <action
+            android:id="@+id/action_scooterListFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
@@ -71,12 +84,22 @@
         <action
             android:id="@+id/action_mapFragment_to_scooterDetailsFragment"
             app:destination="@id/scooterDetailsFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_scannerFragment"
+            app:destination="@id/scannerFragment" />
     </fragment>
     <fragment
         android:id="@+id/rideListFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.RideListFragment"
         android:label="RideListFragment"
-        tools:layout="@layout/fragment_ride_list" />
+        tools:layout="@layout/fragment_ride_list" >
+        <argument
+            android:name="status"
+            app:argType="dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus" />
+        <action
+            android:id="@+id/action_rideListFragment_to_scooterDetailsFragment"
+            app:destination="@id/scooterDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/cameraFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.CameraFragment"
@@ -86,5 +109,23 @@
             android:name="scooterId"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/scannerFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScannerFragment"
+        android:label="ScannerFragment"
+        tools:layout="@layout/fragment_scanner" >
+        <argument
+            android:name="scooterId"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_scannerFragment_to_scooterDetailsFragment"
+            app:destination="@id/scooterDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/balanceFragment"
+        android:name="dk.itu.moapd.scootersharing.jonli.fragments.BalanceFragment"
+        android:label="BalanceFragment"
+        tools:layout="@layout/fragment_balance"/>
 
 </navigation>

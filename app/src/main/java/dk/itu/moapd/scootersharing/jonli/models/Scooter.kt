@@ -14,6 +14,8 @@ data class Scooter(
     var image: String? = null,
     var latitude: Double? = null,
     var longitude: Double? = null,
+    var currentUser: String? = null,
+    var imageIsUpdated: Boolean = false,
 ) {
     override fun toString(): String {
         return "[Scooter] $name is placed at $location"

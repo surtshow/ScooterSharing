@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import dk.itu.moapd.scootersharing.jonli.R
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentProfileBinding
+import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : BaseFragment() {
 
     private lateinit var binding: FragmentProfileBinding
 
@@ -24,8 +25,27 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.activeRides.setOnClickListener {
+            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.STARTED))
+        }
+
         binding.finishedRides.setOnClickListener {
-            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToRideListFragment())
+            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.ENDED))
+        }
+
+        binding.checkBalance.setOnClickListener {
+            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToBalanceFragment())
+        }
+
+        binding.topAppBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.scannerFragment -> {
+                    findNavController()
+                        .navigate(ProfileFragmentDirections.actionProfileFragmentToScannerFragment(null))
+                    true
+                }
+                else -> false
+            }
         }
     }
 }

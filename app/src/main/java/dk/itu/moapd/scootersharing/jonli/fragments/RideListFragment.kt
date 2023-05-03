@@ -6,11 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import dk.itu.moapd.scootersharing.jonli.adapters.RideArrayAdapter
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentRideListBinding
-import dk.itu.moapd.scootersharing.jonli.models.Ride
+import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
 import dk.itu.moapd.scootersharing.jonli.viewmodels.RideListViewModel
 import dk.itu.moapd.scootersharing.jonli.viewmodels.RideListViewModelFactory
 
@@ -18,7 +19,8 @@ class RideListFragment : Fragment() {
 
     private lateinit var binding: FragmentRideListBinding
     private lateinit var viewModel: RideListViewModel
-    private lateinit var adapter: RideArrayAdapter
+
+    private val args: RideListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,25 +29,44 @@ class RideListFragment : Fragment() {
     ): View {
         binding = FragmentRideListBinding.inflate(layoutInflater, container, false)
 
-        val viewModelFactory = RideListViewModelFactory()
+        val viewModelFactory = RideListViewModelFactory(this, args.status)
         viewModel = ViewModelProvider(this, viewModelFactory)[RideListViewModel::class.java]
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        viewModel.auth.currentUser?.let {
-            val query = viewModel.database.child("rides")
-                .child(it.uid)
 
-            val options = FirebaseRecyclerOptions.Builder<Ride>()
-                .setQuery(query, Ride::class.java)
-                .setLifecycleOwner(this)
-                .build()
-
-            adapter = RideArrayAdapter(
-                options,
-            )
-        }
-        binding.recyclerView.adapter = adapter
-
+        setupObservers()
         return binding.root
+    }
+
+    private fun setupObservers() {
+        viewModel.rides.observe(viewLifecycleOwner) {
+            it?.let {
+                when (args.status) {
+                    RideStatus.STARTED -> {
+                        binding.recyclerView.adapter = RideArrayAdapter(it) { key, ride ->
+                            findNavController()
+                                .navigate(
+                                    RideListFragmentDirections.actionRideListFragmentToScooterDetailsFragment(
+                                        ride.scooterId!!,
+                                        key,
+                                    ),
+                                )
+                        }
+                    }
+                    RideStatus.ENDED -> {
+                        binding.recyclerView.adapter = RideArrayAdapter(it) { _, ride ->
+                            findNavController()
+                                .navigate(
+                                    RideListFragmentDirections.actionRideListFragmentToScooterDetailsFragment(
+                                        ride.scooterId!!,
+                                        null,
+                                    ),
+                                )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 }

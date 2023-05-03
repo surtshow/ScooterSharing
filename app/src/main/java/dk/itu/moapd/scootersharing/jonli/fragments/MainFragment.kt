@@ -47,7 +47,7 @@ class MainFragment : Fragment() {
                 options,
             ) { key ->
                 findNavController()
-                    .navigate(MainFragmentDirections.actionMainFragmentToScooterDetailsFragment(key))
+                    .navigate(MainFragmentDirections.actionMainFragmentToScooterDetailsFragment(key, null))
             }
         }
     }

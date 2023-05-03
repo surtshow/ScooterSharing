@@ -1,12 +1,8 @@
 package dk.itu.moapd.scootersharing.jonli.fragments
 
-import android.content.BroadcastReceiver
-import android.content.ContentValues.TAG
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,39 +13,22 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.gms.location.* // ktlint-disable no-wildcard-imports
-import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.database.DataSnapshot
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentScooterDetailsBinding
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
+import dk.itu.moapd.scootersharing.jonli.interfaces.OnGetDataListener
 import dk.itu.moapd.scootersharing.jonli.services.LocationService
+import dk.itu.moapd.scootersharing.jonli.utils.LocationReceiver
 import dk.itu.moapd.scootersharing.jonli.viewmodels.ScooterDetailsViewModel
 import dk.itu.moapd.scootersharing.jonli.viewmodels.ScooterDetailsViewModelFactory
 
 class ScooterDetailsFragment : BaseFragment() {
 
-    private class LocationReceiver(
-        private val viewModel: ScooterDetailsViewModel,
-    ) : BroadcastReceiver() {
-
-        private var location = LatLng(0.0, 0.0)
-
-        fun getReceiverLocation(): LatLng {
-            return location
-        }
-        override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d(TAG, "Received location update")
-            if (intent != null) {
-                intent.getParcelableExtra<LatLng>("EXTRA_LOCATION")?.let {
-                    Log.d(TAG, "Location: ${it.latitude}, ${it.longitude}")
-                    location = it
-                    viewModel.updateLocation(location)
-                }
-            }
-        }
-    }
-
     private lateinit var binding: FragmentScooterDetailsBinding
     private lateinit var viewModel: ScooterDetailsViewModel
     private lateinit var locationReceiver: LocationReceiver
+
+    private var rideIsActive = false
 
     private val args: ScooterDetailsFragmentArgs by navArgs()
 
@@ -60,7 +39,7 @@ class ScooterDetailsFragment : BaseFragment() {
     ): View {
         binding = FragmentScooterDetailsBinding.inflate(layoutInflater, container, false)
 
-        val viewModelFactory = ScooterDetailsViewModelFactory(args.scooterId)
+        val viewModelFactory = ScooterDetailsViewModelFactory(args.scooterId, args.rideId)
         viewModel = ViewModelProvider(this, viewModelFactory)[ScooterDetailsViewModel::class.java]
 
         requestLocationPermission()
@@ -97,7 +76,14 @@ class ScooterDetailsFragment : BaseFragment() {
         viewModel.scooter.observe(viewLifecycleOwner) {
             it?.let {
                 binding.scooterName.text = it.name
-                binding.scooterDescription.text = locationReceiver.getReceiverLocation().toString()
+
+                it.latitude?.let { latitude ->
+                    it.longitude?.let { longitude ->
+                        getAddress(latitude, longitude) { str ->
+                            binding.scooterDescription.text = str
+                        }
+                    }
+                }
 
                 if (it.isAvailable) {
                     binding.reserveButton.text = "Reserve"
@@ -120,13 +106,17 @@ class ScooterDetailsFragment : BaseFragment() {
             }
         }
         viewModel.ride.observe(viewLifecycleOwner) {
+            rideIsActive = false
+            binding.reserveButton.isEnabled = true
+            binding.photoButton.isEnabled = false
+            binding.startButton.text = "Start ride"
+
             it?.let {
                 if (it.status == RideStatus.STARTED) {
+                    rideIsActive = true
                     binding.reserveButton.isEnabled = false
+                    binding.photoButton.isEnabled = true
                     binding.startButton.text = "End ride"
-                } else {
-                    binding.reserveButton.isEnabled = true
-                    binding.startButton.text = "Start ride"
                 }
             }
         }
@@ -142,16 +132,60 @@ class ScooterDetailsFragment : BaseFragment() {
         }
 
         binding.startButton.setOnClickListener {
-            if (checkPermission()) {
-                requestLocationPermission()
+            if (rideIsActive) {
+                viewModel.checkScooterImageUpdate(object : OnGetDataListener {
+                    override fun onSuccess(snapshot: DataSnapshot) {
+                        snapshot.getValue(Boolean::class.java)?.let { isUpdated ->
+                            if (isUpdated) {
+                                viewModel.endRide()
+                                updateLocationText()
+                            } else {
+                                dialog(
+                                    "Picture not updated",
+                                    "Please update the picture before ending the ride. This will help the next user to find the scooter.",
+                                    "Take picture",
+                                    "End ride",
+                                    {
+                                        findNavController()
+                                            .navigate(
+                                                ScooterDetailsFragmentDirections
+                                                    .actionScooterDetailsFragmentToCameraFragment(args.scooterId),
+                                            )
+                                    },
+                                    {
+                                        viewModel.endRide()
+                                        updateLocationText()
+                                    },
+                                )
+                            }
+                        }
+                    }
+                })
             } else {
-                viewModel.changeStartStatus()
+                findNavController()
+                    .navigate(
+                        ScooterDetailsFragmentDirections.actionScooterDetailsFragmentToScannerFragment(
+                            args.scooterId,
+                        ),
+                    )
             }
         }
 
         binding.photoButton.setOnClickListener {
             findNavController()
                 .navigate(ScooterDetailsFragmentDirections.actionScooterDetailsFragmentToCameraFragment(args.scooterId))
+        }
+
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun updateLocationText() {
+        viewModel.getLocation().let {
+            getAddress(it.latitude, it.longitude) { address ->
+                viewModel.updateLocationString(address)
+            }
         }
     }
 }

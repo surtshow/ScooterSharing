@@ -18,33 +18,29 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:titleCentered="true"
-            app:menu="@menu/top_app_bar_menu"
+            app:navigationContentDescription="Back"
+            app:navigationIcon="@drawable/ic_back"
             app:title="Scooter list" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/current_balance_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:text="Current balance: " />
+
+    <EditText
+        android:id="@+id/balance_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        />
 
     <Button
-        android:id="@+id/active_rides"
+        android:id="@+id/add_funds_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Active rides"/>
-
-    <Button
-        android:id="@+id/finished_rides"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Finished rides"/>
-
-    <Button
-        android:id="@+id/check_balance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Check balance"/>
+        android:text="Add funds"/>
 
 </LinearLayout>

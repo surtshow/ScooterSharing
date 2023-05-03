@@ -4,19 +4,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.storage.StorageReference
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
+import dk.itu.moapd.scootersharing.jonli.interfaces.OnGetDataListener
+import dk.itu.moapd.scootersharing.jonli.models.Account
 import dk.itu.moapd.scootersharing.jonli.models.Ride
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
+import dk.itu.moapd.scootersharing.jonli.utils.Utils.calculatePrice
 import kotlinx.coroutines.launch
 
 class ScooterDetailsViewModel(
     private val scooterId: String,
-) : BaseViewModel() {
-
-    private lateinit var rideId: String
-    private var location: LatLng = LatLng(0.0, 0.0)
+    private var rideId: String?,
+) : LocationViewModel() {
 
     var scooter = MutableLiveData<Scooter?>(null)
     var ride = MutableLiveData<Ride?>(null)
@@ -24,6 +24,7 @@ class ScooterDetailsViewModel(
     init {
         viewModelScope.launch {
             getScooter()
+            getRide()
         }
     }
 
@@ -40,23 +41,21 @@ class ScooterDetailsViewModel(
         }
     }
 
-//    private fun getRide() {
-//        auth.currentUser?.let {
-//            database.child("rides")
-//                .child(it.uid)
-//                .orderByChild("scooterId").equalTo(scooterId)
-//                .get()
-//                .addOnSuccessListener { snapshot ->
-//                    for (child in snapshot.children) {
-//                        child.getValue(Ride::class.java)?.let { ride ->
-//                            if (ride.status == RideStatus.STARTED || ride.status == RideStatus.RESERVED) {
-//                                this.ride.value = ride
-//                            }
-//                        }
-//                    }
-//                }
-//        }
-//    }
+    private fun getRide() {
+        rideId?.let { rideId ->
+            auth.currentUser?.let {
+                database.child("rides")
+                    .child(it.uid)
+                    .child(rideId)
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        snapshot.getValue(Ride::class.java)?.let { ride ->
+                            this.ride.value = ride
+                        }
+                    }
+            }
+        }
+    }
 
     fun getScooterImage(): StorageReference {
         scooter.value?.let {
@@ -75,14 +74,6 @@ class ScooterDetailsViewModel(
         }
     }
 
-    fun changeStartStatus() {
-        if (ride.value?.status == RideStatus.STARTED) {
-            endRide()
-        } else {
-            startRide()
-        }
-    }
-
     private fun updateScooter(scooter: Scooter) {
         this.scooter.value = scooter
         auth.currentUser?.let {
@@ -93,12 +84,14 @@ class ScooterDetailsViewModel(
     }
 
     private fun updateRide(ride: Ride) {
-        this.ride.value = ride
-        auth.currentUser?.let {
-            database.child("rides")
-                .child(it.uid)
-                .child(rideId)
-                .setValue(ride)
+        rideId?.let { rideId ->
+            this.ride.value = ride
+            auth.currentUser?.let {
+                database.child("rides")
+                    .child(it.uid)
+                    .child(rideId)
+                    .setValue(ride)
+            }
         }
     }
 
@@ -123,7 +116,8 @@ class ScooterDetailsViewModel(
                         null,
                         null,
                         null,
-                        System.currentTimeMillis(),
+                        null,
+                        null,
                         null,
                         null,
                         0.0,
@@ -144,81 +138,83 @@ class ScooterDetailsViewModel(
             it.endTime = System.currentTimeMillis()
             it.status = RideStatus.CANCELLED
             updateRide(it)
+            rideId = null
+            ride.value = null
         }
     }
 
-    private fun startRide() {
-        scooter.value?.let {
-            it.isAvailable = false
-            updateScooter(it)
-        }
-
-        if (ride.value != null) {
-            ride.value?.let {
-                it.startTime = System.currentTimeMillis()
-                it.status = RideStatus.STARTED
-                it.startLatitude = location.latitude
-                it.startLongitude = location.longitude
-                updateRide(it)
-            }
-        } else {
-            auth.currentUser?.let { user ->
-                val uid = database.child("rides")
-                    .child(user.uid)
-                    .push()
-                    .key
-
-                uid?.let {
-                    rideId = it
-                    updateRide(
-                        Ride(
-                            scooterId,
-                            location.latitude,
-                            location.longitude,
-                            null,
-                            null,
-                            null,
-                            System.currentTimeMillis(),
-                            null,
-                            0.0,
-                            RideStatus.STARTED,
-                        ),
-                    )
-                }
-            }
-        }
-    }
-
-    private fun endRide() {
+    fun endRide() {
         scooter.value?.let {
             it.timestamp = System.currentTimeMillis()
             it.isAvailable = true
-            it.latitude = location.latitude
-            it.longitude = location.longitude
+            it.latitude = getLocation().latitude
+            it.longitude = getLocation().longitude
+            it.currentUser = null
+            it.imageIsUpdated = false
             updateScooter(it)
         }
 
         ride.value?.let {
             it.endTime = System.currentTimeMillis()
             it.status = RideStatus.ENDED
-            it.endLatitude = location.latitude
-            it.endLongitude = location.longitude
+            it.endLatitude = getLocation().latitude
+            it.endLongitude = getLocation().longitude
+            it.price = it.startTime?.let { st ->
+                it.endTime?.let { et ->
+                    calculatePrice(st, et)
+                }
+            }
+            payPrice(it.price ?: 0.0)
             updateRide(it)
             ride.value = null
         }
     }
 
-    fun updateLocation(location: LatLng) {
-        this.location = location
+    fun updateLocationString(location: String) {
+        scooter.value?.let {
+            it.location = location
+            updateScooter(it)
+        }
+        ride.value?.let {
+            it.endLocation = location
+            updateRide(it)
+        }
+    }
+
+    private fun payPrice(price: Double) {
+        auth.currentUser?.let { user ->
+            database.child("account")
+                .child(user.uid)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    snapshot.getValue(Account::class.java)?.let { account ->
+                        val newBalance = account.balance - price
+                        database.child("account")
+                            .child(user.uid)
+                            .setValue(Account(newBalance))
+                    }
+                }
+        }
+    }
+
+    fun checkScooterImageUpdate(listener: OnGetDataListener) {
+        database.child("scooters")
+            .child(scooterId)
+            .child("imageIsUpdated")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                listener.onSuccess(snapshot)
+            }
     }
 }
 
 class ScooterDetailsViewModelFactory(
     private val scooterId: String,
+    private val rideId: String?,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ScooterDetailsViewModel::class.java)) {
-            return ScooterDetailsViewModel(scooterId) as T
+            return ScooterDetailsViewModel(scooterId, rideId) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

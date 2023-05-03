@@ -12,6 +12,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import dk.itu.moapd.scootersharing.jonli.R
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentMapBinding
 import dk.itu.moapd.scootersharing.jonli.viewmodels.MapViewModel
 import dk.itu.moapd.scootersharing.jonli.viewmodels.MapViewModelFactory
@@ -65,6 +66,19 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
+    private fun setupListeners() {
+        binding.topAppBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.scannerFragment -> {
+                    findNavController()
+                        .navigate(MapFragmentDirections.actionMapFragmentToScannerFragment(null))
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         if (checkPermission()) {
             return
@@ -98,7 +112,7 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         map.setOnMarkerClickListener { marker ->
             val scooter = marker.title
             scooter?.let {
-                val action = MapFragmentDirections.actionMapFragmentToScooterDetailsFragment(it)
+                val action = MapFragmentDirections.actionMapFragmentToScooterDetailsFragment(it, null)
                 findNavController()
                     .navigate(action)
             }
@@ -106,5 +120,6 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
         }
 
         setupObservers()
+        setupListeners()
     }
 }
