@@ -18,11 +18,14 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp">
+
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/image_view"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:layout_marginEnd="20dp"/>
+            android:layout_marginEnd="20dp"
+            android:contentDescription="@string/scooter_image" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,14 +36,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="24dp"
+            android:textSize="20sp"
             tools:text="Name" />
+
         <TextView
-            android:id="@+id/description"
+            android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="24dp"
-            tools:text="Location" />
+            tools:text="timestamp" />
         </LinearLayout>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

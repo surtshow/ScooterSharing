@@ -3,33 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/scooterListFragment">
+    app:startDestination="@id/profileFragment">
 
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="dk.itu.moapd.scootersharing.jonli.fragments.MainFragment"
-        android:label="MainFragment"
-        tools:layout="@layout/fragment_main">
-        <action
-            android:id="@+id/action_mainFragment_to_startRideFragment"
-            app:destination="@id/startRideFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_updateRideFragment"
-            app:destination="@id/updateRideFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_scooterDetailsFragment"
-            app:destination="@id/scooterDetailsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/startRideFragment"
-        android:name="dk.itu.moapd.scootersharing.jonli.fragments.StartRideFragment"
-        android:label="StartRideFragment"
-        tools:layout="@layout/fragment_start_ride" />
-    <fragment
-        android:id="@+id/updateRideFragment"
-        android:name="dk.itu.moapd.scootersharing.jonli.fragments.UpdateRideFragment"
-        android:label="UpdateRideFragment"
-        tools:layout="@layout/fragment_update_ride" />
     <fragment
         android:id="@+id/scooterDetailsFragment"
         android:name="dk.itu.moapd.scootersharing.jonli.fragments.ScooterDetailsFragment"

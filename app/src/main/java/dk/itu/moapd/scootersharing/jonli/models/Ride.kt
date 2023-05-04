@@ -10,8 +10,6 @@ data class Ride(
     var startLongitude: Double? = null,
     var endLatitude: Double? = null,
     var endLongitude: Double? = null,
-    var startLocation: String? = null,
-    var endLocation: String? = null,
     var startTime: Long? = null,
     var endTime: Long? = null,
     var price: Double? = null,

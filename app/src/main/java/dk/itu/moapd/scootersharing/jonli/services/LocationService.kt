@@ -2,6 +2,7 @@ package dk.itu.moapd.scootersharing.jonli.services
 
 import android.app.Service
 import android.content.Intent
+import android.graphics.PointF
 import android.os.IBinder
 import android.os.Looper
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -13,10 +14,6 @@ class LocationService : Service() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private lateinit var locationCallback: LocationCallback
-
-    companion object {
-        private const val ALL_PERMISSIONS_RESULT = 1011
-    }
 
     override fun onBind(intent: Intent): IBinder {
         TODO()
@@ -42,6 +39,7 @@ class LocationService : Service() {
                 super.onLocationResult(locationResult)
                 locationResult.lastLocation?.let {
                     newLocation(LatLng(it.latitude, it.longitude))
+                    newSpeed(it.speed)
                 }
             }
         }
@@ -50,6 +48,13 @@ class LocationService : Service() {
     private fun newLocation(location: LatLng) {
         val intent = Intent("ACTION_BROADCAST_LOCATION")
         intent.putExtra("EXTRA_LOCATION", location)
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+    }
+
+    private fun newSpeed(speed: Float) {
+        val intent = Intent("ACTION_BROADCAST_SPEED")
+        intent.putExtra("EXTRA_SPEED", PointF(speed, 0f))
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
     }

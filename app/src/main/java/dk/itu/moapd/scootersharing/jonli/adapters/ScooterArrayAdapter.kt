@@ -11,6 +11,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dk.itu.moapd.scootersharing.jonli.databinding.ListScootersBinding
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
+import dk.itu.moapd.scootersharing.jonli.utils.Utils.formatDate
 
 class ScooterArrayAdapter(
     options: FirebaseRecyclerOptions<Scooter>,
@@ -39,7 +40,7 @@ class ScooterArrayAdapter(
 
         fun bind(scooter: Scooter, key: String?, onClick: (String) -> Unit) {
             binding.title.text = scooter.name
-            binding.description.text = scooter.toString()
+            binding.timestamp.text = scooter.timestamp.formatDate()
             binding.scooterLayout.setOnClickListener {
                 key?.let {
                     onClick(it)
@@ -51,7 +52,7 @@ class ScooterArrayAdapter(
             val imageRef = storage.reference.child("${scooter.image}")
 
             // Clean the image UI component.
-            binding.image.setImageResource(0)
+            binding.imageView.setImageResource(0)
 
             // Download and set an image into the ImageView.
             imageRef.downloadUrl.addOnSuccessListener {
@@ -59,7 +60,7 @@ class ScooterArrayAdapter(
                     .load(it)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .centerCrop()
-                    .into(binding.image)
+                    .into(binding.imageView)
             }
         }
 

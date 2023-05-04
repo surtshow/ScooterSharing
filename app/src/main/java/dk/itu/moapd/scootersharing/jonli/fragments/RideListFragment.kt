@@ -9,9 +9,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import dk.itu.moapd.scootersharing.jonli.adapters.RideArrayAdapter
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentRideListBinding
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
+import dk.itu.moapd.scootersharing.jonli.models.Ride
 import dk.itu.moapd.scootersharing.jonli.viewmodels.RideListViewModel
 import dk.itu.moapd.scootersharing.jonli.viewmodels.RideListViewModelFactory
 
@@ -19,6 +21,7 @@ class RideListFragment : Fragment() {
 
     private lateinit var binding: FragmentRideListBinding
     private lateinit var viewModel: RideListViewModel
+    private lateinit var query: com.google.firebase.database.Query
 
     private val args: RideListFragmentArgs by navArgs()
 
@@ -34,39 +37,60 @@ class RideListFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        setupObservers()
+        setupRecycler()
+        setupListeners()
         return binding.root
     }
 
-    private fun setupObservers() {
-        viewModel.rides.observe(viewLifecycleOwner) {
-            it?.let {
-                when (args.status) {
-                    RideStatus.STARTED -> {
-                        binding.recyclerView.adapter = RideArrayAdapter(it) { key, ride ->
-                            findNavController()
-                                .navigate(
-                                    RideListFragmentDirections.actionRideListFragmentToScooterDetailsFragment(
-                                        ride.scooterId!!,
-                                        key,
-                                    ),
-                                )
-                        }
-                    }
-                    RideStatus.ENDED -> {
-                        binding.recyclerView.adapter = RideArrayAdapter(it) { _, ride ->
-                            findNavController()
-                                .navigate(
-                                    RideListFragmentDirections.actionRideListFragmentToScooterDetailsFragment(
-                                        ride.scooterId!!,
-                                        null,
-                                    ),
-                                )
-                        }
-                    }
-                    else -> {}
+    private fun setupRecycler() {
+        viewModel.auth.currentUser?.let {
+            when (args.status) {
+                RideStatus.STARTED -> {
+                    query = viewModel.database.child("rides")
+                        .child(it.uid)
+                        .orderByChild("status").equalTo("STARTED")
                 }
+                RideStatus.ENDED -> {
+                    query = viewModel.database.child("rides")
+                        .child(it.uid)
+                        .orderByChild("status").equalTo("ENDED")
+                }
+                RideStatus.RESERVED -> {
+                    query = viewModel.database.child("rides")
+                        .child(it.uid)
+                        .orderByChild("status").equalTo("RESERVED")
+                }
+                else -> {}
             }
+
+            val options = FirebaseRecyclerOptions.Builder<Ride>()
+                .setQuery(query, Ride::class.java)
+                .setLifecycleOwner(this)
+                .build()
+
+            when (args.status) {
+                RideStatus.STARTED, RideStatus.RESERVED -> {
+                    binding.recyclerView.adapter = RideArrayAdapter(options) { key, ride ->
+                        findNavController()
+                            .navigate(
+                                RideListFragmentDirections.actionRideListFragmentToScooterDetailsFragment(
+                                    ride.scooterId!!,
+                                    key,
+                                ),
+                            )
+                    }
+                }
+                RideStatus.ENDED -> {
+                    binding.recyclerView.adapter = RideArrayAdapter(options)
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun setupListeners() {
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
     }
 }

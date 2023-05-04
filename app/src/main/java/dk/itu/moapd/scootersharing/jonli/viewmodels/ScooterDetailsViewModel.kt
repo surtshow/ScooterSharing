@@ -63,7 +63,7 @@ class ScooterDetailsViewModel(
                 return storage.reference.child(image)
             }
         }
-        return storage.reference.child("upan.png")
+        return storage.reference.child("scooter.png")
     }
 
     fun changeReserveStatus() {
@@ -118,8 +118,6 @@ class ScooterDetailsViewModel(
                         null,
                         null,
                         null,
-                        null,
-                        null,
                         0.0,
                         RideStatus.RESERVED,
                     ),
@@ -167,17 +165,6 @@ class ScooterDetailsViewModel(
             payPrice(it.price ?: 0.0)
             updateRide(it)
             ride.value = null
-        }
-    }
-
-    fun updateLocationString(location: String) {
-        scooter.value?.let {
-            it.location = location
-            updateScooter(it)
-        }
-        ride.value?.let {
-            it.endLocation = location
-            updateRide(it)
         }
     }
 

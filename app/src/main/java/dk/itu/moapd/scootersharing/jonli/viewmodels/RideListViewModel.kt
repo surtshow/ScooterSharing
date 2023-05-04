@@ -1,30 +1,20 @@
 package dk.itu.moapd.scootersharing.jonli.viewmodels
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
 import dk.itu.moapd.scootersharing.jonli.models.Ride
-import kotlinx.coroutines.launch
 
 class RideListViewModel(
     private val lifecycleOwner: LifecycleOwner,
     private val rideType: RideStatus,
 ) : BaseViewModel() {
 
-    var rides = MutableLiveData<FirebaseRecyclerOptions<Ride>?>(null)
     private lateinit var query: com.google.firebase.database.Query
 
-    init {
-        viewModelScope.launch {
-            getRides(rideType)
-        }
-    }
-
-    private fun getRides(rideType: RideStatus) {
+    fun getRides(rideType: RideStatus): FirebaseRecyclerOptions<Ride>? {
         auth.currentUser?.let {
             if (rideType == RideStatus.STARTED) {
                 query = database.child("rides")
@@ -40,9 +30,8 @@ class RideListViewModel(
                 .setQuery(query, Ride::class.java)
                 .setLifecycleOwner(lifecycleOwner)
                 .build()
-
-            rides.value = options
         }
+        return null
     }
 }
 

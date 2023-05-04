@@ -2,8 +2,8 @@ package dk.itu.moapd.scootersharing.jonli.fragments
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -14,6 +14,14 @@ abstract class BaseFragment : Fragment() {
 
     companion object {
         private const val ALL_PERMISSIONS_RESULT = 1011
+
+        private const val REQUEST_CODE_PERMISSIONS = 10
+
+        @RequiresApi(Build.VERSION_CODES.S)
+        private val REQUIRED_PERMISSIONS = arrayOf(
+            Manifest.permission.ACTIVITY_RECOGNITION,
+            Manifest.permission.HIGH_SAMPLING_RATE_SENSORS,
+        )
     }
 
     fun requestLocationPermission() {
@@ -38,6 +46,28 @@ abstract class BaseFragment : Fragment() {
         return result
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun requestSensorPermission() {
+        val permissions: Array<String> = arrayOf(
+            Manifest.permission.ACTIVITY_RECOGNITION,
+            Manifest.permission.HIGH_SAMPLING_RATE_SENSORS,
+        )
+
+        val permissionsToRequest = permissionsToRequest(permissions)
+
+        if (permissionsToRequest.isNotEmpty()) {
+            requestPermissions(permissionsToRequest.toTypedArray(), ALL_PERMISSIONS_RESULT)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            requireContext(),
+            it,
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     fun checkPermission() =
         ContextCompat.checkSelfPermission(
             requireContext(),
@@ -47,31 +77,6 @@ abstract class BaseFragment : Fragment() {
                 requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             ) != PackageManager.PERMISSION_GRANTED
-
-    private fun Address.toAddressString(): String {
-        val address = this
-        val stringBuilder = StringBuilder()
-        stringBuilder.apply {
-            append(address.getAddressLine(0)).append("\n")
-            append(address.locality).append("\n")
-            append(address.postalCode).append("\n")
-            append(address.countryName)
-        }
-        return stringBuilder.toString()
-    }
-
-    fun getAddress(latitude: Double, longitude: Double, callback: (String) -> Unit) {
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-        geocoder.getFromLocation(
-            latitude,
-            longitude,
-            1,
-        )?.let { addresses ->
-            addresses.firstOrNull()?.toAddressString()?.let { address ->
-                callback(address)
-            }
-        }
-    }
 
     @Suppress("LongParameterList")
     fun dialog(

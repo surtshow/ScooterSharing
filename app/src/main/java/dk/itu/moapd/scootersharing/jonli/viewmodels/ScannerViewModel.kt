@@ -18,7 +18,6 @@ class ScannerViewModel(
     private lateinit var qrCode: String
     var rideId: String? = null
     private var activeRide: Ride? = null
-    var address = "Unknown address"
 
     var ride = MutableLiveData<Ride?>(null)
 
@@ -82,7 +81,6 @@ class ScannerViewModel(
                     it.status = RideStatus.STARTED
                     it.startLatitude = getLocation().latitude
                     it.startLongitude = getLocation().longitude
-                    it.startLocation = address
                     updateRide(it)
                 }
             }
@@ -105,8 +103,6 @@ class ScannerViewModel(
                             getLocation().latitude,
                             getLocation().longitude,
                             null,
-                            null,
-                            address,
                             null,
                             System.currentTimeMillis(),
                             null,

@@ -7,10 +7,12 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
 import dk.itu.moapd.scootersharing.jonli.models.Ride
+import dk.itu.moapd.scootersharing.jonli.utils.Utils.asPrice
+import dk.itu.moapd.scootersharing.jonli.utils.Utils.formatDate
 
 class RideArrayAdapter(
     options: FirebaseRecyclerOptions<Ride>,
-    private val onClick: (String, Ride) -> Unit,
+    private val onClick: (String, Ride) -> Unit = { _, _ -> },
 ) :
     FirebaseRecyclerAdapter<Ride, RideArrayAdapter.ViewHolder>(options) {
 
@@ -34,7 +36,10 @@ class RideArrayAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(ride: Ride, key: String?, onClick: (String, Ride) -> Unit) {
-            binding.rideId.text = ride.scooterId
+            binding.scooterName.text = "Scooter ride"
+            binding.startTime.text = ride.startTime?.formatDate() ?: "N/A"
+            binding.endTime.text = ride.endTime?.formatDate() ?: "N/A"
+            binding.price.text = ride.price?.asPrice() ?: "0.0 DKK"
             binding.status.text = ride.status.name
             binding.rideLayout.setOnClickListener {
                 key?.let {

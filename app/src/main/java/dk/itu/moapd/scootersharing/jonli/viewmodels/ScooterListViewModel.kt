@@ -5,33 +5,51 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
+import dk.itu.moapd.scootersharing.jonli.utils.Utils.getCloseScooter
 import kotlinx.coroutines.launch
 
 class ScooterListViewModel(
     private val lifecycleOwner: LifecycleOwner,
-) : BaseViewModel() {
+) : LocationViewModel() {
 
-    var scooters = MutableLiveData<FirebaseRecyclerOptions<Scooter>?>(null)
+    var scooterList = MutableLiveData<ArrayList<Pair<String?, Scooter?>>?>(null)
 
     init {
         viewModelScope.launch {
-            getScooters()
+            getScooterList()
         }
     }
 
-    private fun getScooters() {
+    private fun getScooterList() {
+        scooterList.value = ArrayList()
         auth.currentUser?.let {
-            val query = database.child("scooters").orderByChild("available").equalTo(true)
+            val ref = database.child("scooters")
+            val eventListener: ValueEventListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for (snapshot in dataSnapshot.children) {
+                        val key = snapshot.key
+                        val scooter = snapshot.getValue(Scooter::class.java)
+                        scooterList.value?.add(Pair(key, scooter))
+                    }
+                }
 
-            val options = FirebaseRecyclerOptions.Builder<Scooter>()
-                .setQuery(query, Scooter::class.java)
-                .setLifecycleOwner(lifecycleOwner)
-                .build()
-
-            scooters.value = options
+                override fun onCancelled(databaseError: DatabaseError) {
+                    println(databaseError.message)
+                }
+            }
+            ref.addListenerForSingleValueEvent(eventListener)
         }
+    }
+
+    fun getNearestScooters(): String? {
+        scooterList.value?.let {
+            return getCloseScooter(it, getLocation().latitude, getLocation().longitude)
+        }
+        return null
     }
 }
 

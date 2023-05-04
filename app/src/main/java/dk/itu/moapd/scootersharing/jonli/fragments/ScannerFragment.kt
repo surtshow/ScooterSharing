@@ -71,11 +71,6 @@ class ScannerFragment : BaseFragment() {
                     requestLocationPermission()
                 } else {
                     qrCode = it.text
-                    viewModel.getLocation().let {
-                        getAddress(it.latitude, it.longitude) { address ->
-                            viewModel.address = address
-                        }
-                    }
                     viewModel.scanQrCode(it.text)
                 }
             }

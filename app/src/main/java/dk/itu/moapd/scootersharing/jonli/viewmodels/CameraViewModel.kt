@@ -42,7 +42,7 @@ class CameraViewModel(
         }
     }
 
-    fun updateScooterPicture(imageByteArray: ByteArray, callback: () -> Unit) {
+    fun updateScooterPicture(imageByteArray: ByteArray) {
         viewModelScope.launch {
             imageRef.putBytes(imageByteArray)
         }
@@ -53,7 +53,6 @@ class CameraViewModel(
                 .child(scooterId)
                 .setValue(scooter)
         }
-        callback()
     }
 }
 

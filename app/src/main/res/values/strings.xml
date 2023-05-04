@@ -18,4 +18,8 @@
     <string name="start_ride">Start ride</string>
     <string name="take_photo">Take photo</string>
     <string name="scanner">Scanner</string>
+    <string name="no_name_found">No name found</string>
+    <string name="arrow"><![CDATA[>]]></string>
+    <string name="find_nearest_scooter">Find nearest scooter</string>
+    <string name="scooter_image">Scooter image</string>
 </resources>

@@ -1,17 +1,24 @@
 package dk.itu.moapd.scootersharing.jonli.fragments
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import dk.itu.moapd.scootersharing.jonli.R
+import dk.itu.moapd.scootersharing.jonli.activities.LoginActivity
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentProfileBinding
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
+import dk.itu.moapd.scootersharing.jonli.viewmodels.ProfileViewModel
+import dk.itu.moapd.scootersharing.jonli.viewmodels.ProfileViewModelFactory
 
 class ProfileFragment : BaseFragment() {
 
     private lateinit var binding: FragmentProfileBinding
+    private lateinit var viewModel: ProfileViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,21 +27,39 @@ class ProfileFragment : BaseFragment() {
     ): View {
         binding = FragmentProfileBinding.inflate(layoutInflater, container, false)
 
+        val viewModelFactory = ProfileViewModelFactory()
+        viewModel = ViewModelProvider(this, viewModelFactory)[ProfileViewModel::class.java]
+
+        requestLocationPermission()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestSensorPermission()
+        }
+
+        viewModel.auth.currentUser?.displayName?.let {
+            binding.name.text = it
+        }
+
         setupListeners()
         return binding.root
     }
 
     private fun setupListeners() {
         binding.activeRides.setOnClickListener {
-            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.STARTED))
+            findNavController().navigate(
+                ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.STARTED),
+            )
         }
 
         binding.finishedRides.setOnClickListener {
-            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.ENDED))
+            findNavController().navigate(
+                ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.ENDED),
+            )
         }
 
-        binding.checkBalance.setOnClickListener {
-            findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToBalanceFragment())
+        binding.reservedRides.setOnClickListener {
+            findNavController().navigate(
+                ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.RESERVED),
+            )
         }
 
         binding.topAppBar.setOnMenuItemClickListener {
@@ -47,5 +72,21 @@ class ProfileFragment : BaseFragment() {
                 else -> false
             }
         }
+        binding.logoutButton.setOnClickListener {
+            viewModel.auth.signOut()
+            startLoginActivity()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (viewModel.auth.currentUser == null) {
+            startLoginActivity()
+        }
+    }
+
+    private fun startLoginActivity() {
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        startActivity(intent)
     }
 }

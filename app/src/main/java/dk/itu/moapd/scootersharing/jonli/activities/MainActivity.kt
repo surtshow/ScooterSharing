@@ -40,10 +40,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomAppBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.mainFragment -> {
-                    navController.navigate(R.id.mainFragment)
-                    true
-                }
                 R.id.mapFragment -> {
                     navController.navigate(R.id.mapFragment)
                     true

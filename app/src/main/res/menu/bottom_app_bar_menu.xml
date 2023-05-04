@@ -4,13 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <item
-        android:id="@+id/mainFragment"
-        android:icon="@drawable/common_full_open_on_phone"
-        android:iconTint="@color/black"
-        app:showAsAction="ifRoom"
-        android:title="@string/main" />
-
-    <item
         android:id="@+id/mapFragment"
         android:icon="@drawable/ic_baseline_map_24"
         app:showAsAction="ifRoom"

@@ -19,32 +19,91 @@
             android:layout_height="?attr/actionBarSize"
             app:titleCentered="true"
             app:menu="@menu/top_app_bar_menu"
-            app:title="Scooter list" />
+            app:title="Profile" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="wrap_content"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollable"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-    <Button
-        android:id="@+id/active_rides"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Active rides"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/finished_rides"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Finished rides"/>
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="@string/no_name_found" />
 
-    <Button
-        android:id="@+id/check_balance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Check balance"/>
+        <Button
+            android:id="@+id/active_rides"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="64dp"
+            android:paddingVertical="16dp"
+            android:paddingHorizontal="32dp"
+            android:textColor="@color/white"
+            android:backgroundTint="?colorPrimary"
+            app:cornerRadius="50dp"
+            android:text="Active rides" />
+
+        <Button
+            android:id="@+id/reserved_rides"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="64dp"
+            android:paddingVertical="16dp"
+            android:paddingHorizontal="32dp"
+            android:textColor="@color/white"
+            android:backgroundTint="?colorPrimary"
+            app:cornerRadius="50dp"
+            android:text="Reserved Scooters" />
+
+        <Button
+            android:id="@+id/finished_rides"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="64dp"
+            android:paddingVertical="16dp"
+            android:paddingHorizontal="32dp"
+            android:textColor="@color/white"
+            android:backgroundTint="?colorPrimary"
+            app:cornerRadius="50dp"
+            android:text="Finished rides" />
+
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="64dp"
+            android:paddingVertical="16dp"
+            android:paddingHorizontal="32dp"
+            android:textColor="@color/white"
+            android:backgroundTint="?colorPrimary"
+            app:cornerRadius="50dp"
+            android:text="Logout" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
