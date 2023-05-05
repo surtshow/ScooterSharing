@@ -9,44 +9,50 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import dk.itu.moapd.scootersharing.jonli.databinding.ListRidesBinding
+import dk.itu.moapd.scootersharing.jonli.databinding.ListScootersBinding
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
+import dk.itu.moapd.scootersharing.jonli.utils.Utils.formatDate
 
 class ScooterArrayAdapter(
-    // private val itemClickListener: (Scooter) -> Boolean,
     options: FirebaseRecyclerOptions<Scooter>,
+    private val onClick: (String) -> Unit,
 ) :
     FirebaseRecyclerAdapter<Scooter, ScooterArrayAdapter.ViewHolder>(options) {
 
     override fun onCreateViewHolder
     (parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ListRidesBinding.inflate(inflater, parent, false)
+        val binding = ListScootersBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
+    override fun getItemCount() = super.getItemCount()
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int, scooter: Scooter) {
+        val key = this.getRef(position).key
         holder.apply {
-            bind(scooter)
-//            itemView.setOnLongClickListener {
-//                itemClickListener(scooter)
-//            }
+            bind(scooter, key, onClick)
         }
     }
 
-    class ViewHolder(private val binding: ListRidesBinding) :
+    class ViewHolder(private val binding: ListScootersBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(scooter: Scooter) {
+        fun bind(scooter: Scooter, key: String?, onClick: (String) -> Unit) {
             binding.title.text = scooter.name
-            binding.description.text = scooter.toString()
+            binding.timestamp.text = scooter.timestamp.formatDate()
+            binding.scooterLayout.setOnClickListener {
+                key?.let {
+                    onClick(it)
+                }
+            }
 
             // Get the public thumbnail URL.
-            val storage = Firebase.storage(Companion.BUCKET_URL)
+            val storage = Firebase.storage(BUCKET_URL)
             val imageRef = storage.reference.child("${scooter.image}")
 
             // Clean the image UI component.
-            binding.image.setImageResource(0)
+            binding.imageView.setImageResource(0)
 
             // Download and set an image into the ImageView.
             imageRef.downloadUrl.addOnSuccessListener {
@@ -54,7 +60,7 @@ class ScooterArrayAdapter(
                     .load(it)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .centerCrop()
-                    .into(binding.image)
+                    .into(binding.imageView)
             }
         }
 

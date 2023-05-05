@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <item
-        android:id="@+id/mainFragment"
+        android:id="@+id/mapFragment"
         android:icon="@drawable/ic_baseline_map_24"
         app:showAsAction="ifRoom"
-        android:title="QR code scanner" />
+        android:title="@string/map" />
 
     <item
         android:id="@+id/scooterListFragment"
         android:icon="@drawable/ic_baseline_format_list_bulleted_24"
         app:showAsAction="ifRoom"
-        android:title="Scooter list" />
+        android:title="@string/scooters" />
 
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_baseline_person_24"
         app:showAsAction="ifRoom"
-        android:title="Scooter details" />
+        android:title="@string/profile" />
 
 </menu>
