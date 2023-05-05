@@ -55,6 +55,7 @@ class ScooterDetailsFragment : BaseFragment() {
                 val acc = kotlin.math.abs(x).toInt() - 10
 
                 circularProgressIndicator.progress = acc
+                binding.accelerationText.text = if (acc > 0) acc.toString() else 0.toString()
 
                 if (acc > 50) {
                     mediaPlayer.start()
@@ -100,20 +101,21 @@ class ScooterDetailsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        // TODO
-        Intent(requireContext(), LocationService::class.java).also {
-            requireContext().startService(it)
+        if (checkLocationPermission()) {
+            Intent(requireContext(), LocationService::class.java).also {
+                requireContext().startService(it)
+            }
+            LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                    locationReceiver,
+                    IntentFilter("ACTION_BROADCAST_LOCATION"),
+                )
+            LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                    speedReceiver,
+                    IntentFilter("ACTION_BROADCAST_SPEED"),
+                )
         }
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(
-                locationReceiver,
-                IntentFilter("ACTION_BROADCAST_LOCATION"),
-            )
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(
-                speedReceiver,
-                IntentFilter("ACTION_BROADCAST_SPEED"),
-            )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (allPermissionsGranted()) {

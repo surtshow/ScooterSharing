@@ -68,6 +68,16 @@ abstract class BaseFragment : Fragment() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun checkLocationPermission() =
+        ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
+
     fun checkPermission() =
         ContextCompat.checkSelfPermission(
             requireContext(),

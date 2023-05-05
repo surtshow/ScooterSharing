@@ -142,16 +142,18 @@ class ScannerFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        Intent(requireContext(), LocationService::class.java).also {
-            requireContext().startService(it)
-        }
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(
-                locationReceiver,
-                IntentFilter("ACTION_BROADCAST_LOCATION"),
-            )
-        if (mPermissionGranted) {
-            codeScanner.startPreview()
+        if (checkLocationPermission()) {
+            Intent(requireContext(), LocationService::class.java).also {
+                requireContext().startService(it)
+            }
+            LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                    locationReceiver,
+                    IntentFilter("ACTION_BROADCAST_LOCATION"),
+                )
+            if (mPermissionGranted) {
+                codeScanner.startPreview()
+            }
         }
     }
 

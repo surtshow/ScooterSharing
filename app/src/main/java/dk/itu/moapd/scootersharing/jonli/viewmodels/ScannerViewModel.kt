@@ -163,20 +163,6 @@ class ScannerViewModel(
         activeRide = null
         ride.value = null
     }
-
-//    fun checkScooterAvailability(qrCode: String): Boolean {
-//        database.child("scooters")
-//            .child(qrCode)
-//            .get()
-//            .addOnSuccessListener { snapshot ->
-//                snapshot.getValue(Scooter::class.java)?.let { scooter ->
-//                    if (scooter.isAvailable || scooter.currentUser == auth.currentUser?.uid) {
-//                        return@addOnSuccessListener true
-//                    }
-//                }
-//            }
-//        return false
-//    }
 }
 
 class ScannerViewModelFactory(

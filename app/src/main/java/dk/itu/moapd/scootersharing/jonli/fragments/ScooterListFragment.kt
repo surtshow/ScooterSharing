@@ -96,15 +96,16 @@ class ScooterListFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        // TODO
-        Intent(requireContext(), LocationService::class.java).also {
-            requireContext().startService(it)
+        if (checkLocationPermission()) {
+            Intent(requireContext(), LocationService::class.java).also {
+                requireContext().startService(it)
+            }
+            LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(
+                    locationReceiver,
+                    IntentFilter("ACTION_BROADCAST_LOCATION"),
+                )
         }
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(
-                locationReceiver,
-                IntentFilter("ACTION_BROADCAST_LOCATION"),
-            )
     }
 
     override fun onPause() {

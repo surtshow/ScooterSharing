@@ -22,4 +22,5 @@
     <string name="arrow"><![CDATA[>]]></string>
     <string name="find_nearest_scooter">Find nearest scooter</string>
     <string name="scooter_image">Scooter image</string>
+    <string name="update_name">Update name</string>
 </resources>

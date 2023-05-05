@@ -204,7 +204,6 @@ class CameraFragment : Fragment() {
                         val imageBytes = outputStream.toByteArray()
 
                         viewModel.updateScooterPicture(imageBytes)
-                        // TODO
                     }
                 }
 

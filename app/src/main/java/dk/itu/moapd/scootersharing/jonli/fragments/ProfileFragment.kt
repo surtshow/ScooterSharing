@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.UserProfileChangeRequest
 import dk.itu.moapd.scootersharing.jonli.R
 import dk.itu.moapd.scootersharing.jonli.activities.LoginActivity
 import dk.itu.moapd.scootersharing.jonli.databinding.FragmentProfileBinding
@@ -44,6 +45,19 @@ class ProfileFragment : BaseFragment() {
     }
 
     private fun setupListeners() {
+        binding.updateNameButton.setOnClickListener {
+            val name = binding.nameEditText.text.toString()
+            if (name.isNotEmpty()) {
+                viewModel.auth.currentUser?.updateProfile(
+                    UserProfileChangeRequest.Builder()
+                        .setDisplayName(name)
+                        .build(),
+                )?.addOnSuccessListener {
+                    binding.name.text = viewModel.auth.currentUser?.displayName
+                    binding.nameEditText.text.clear()
+                }
+            }
+        }
         binding.activeRides.setOnClickListener {
             findNavController().navigate(
                 ProfileFragmentDirections.actionProfileFragmentToRideListFragment(RideStatus.STARTED),

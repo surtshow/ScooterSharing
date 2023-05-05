@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.storage.StorageReference
 import dk.itu.moapd.scootersharing.jonli.enumerators.RideStatus
 import dk.itu.moapd.scootersharing.jonli.interfaces.OnGetDataListener
-import dk.itu.moapd.scootersharing.jonli.models.Account
 import dk.itu.moapd.scootersharing.jonli.models.Ride
 import dk.itu.moapd.scootersharing.jonli.models.Scooter
 import dk.itu.moapd.scootersharing.jonli.utils.Utils.calculatePrice
@@ -162,25 +161,8 @@ class ScooterDetailsViewModel(
                     calculatePrice(st, et)
                 }
             }
-            payPrice(it.price ?: 0.0)
             updateRide(it)
             ride.value = null
-        }
-    }
-
-    private fun payPrice(price: Double) {
-        auth.currentUser?.let { user ->
-            database.child("account")
-                .child(user.uid)
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    snapshot.getValue(Account::class.java)?.let { account ->
-                        val newBalance = account.balance - price
-                        database.child("account")
-                            .child(user.uid)
-                            .setValue(Account(newBalance))
-                    }
-                }
         }
     }
 

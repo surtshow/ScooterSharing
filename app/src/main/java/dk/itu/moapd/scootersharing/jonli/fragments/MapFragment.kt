@@ -80,11 +80,9 @@ class MapFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        if (checkPermission()) {
-            return
+        if (checkLocationPermission()) {
+            googleMap.isMyLocationEnabled = true
         }
-
-        googleMap.isMyLocationEnabled = true
 
         googleMap.mapType = GoogleMap.MAP_TYPE_HYBRID
 

@@ -35,9 +35,6 @@
         <action
             android:id="@+id/action_profileFragment_to_scannerFragment"
             app:destination="@id/scannerFragment" />
-        <action
-            android:id="@+id/action_profileFragment_to_balanceFragment"
-            app:destination="@id/balanceFragment" />
     </fragment>
     <fragment
         android:id="@+id/scooterListFragment"
@@ -97,10 +94,5 @@
             android:id="@+id/action_scannerFragment_to_scooterDetailsFragment"
             app:destination="@id/scooterDetailsFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/balanceFragment"
-        android:name="dk.itu.moapd.scootersharing.jonli.fragments.BalanceFragment"
-        android:label="BalanceFragment"
-        tools:layout="@layout/fragment_balance"/>
 
 </navigation>
